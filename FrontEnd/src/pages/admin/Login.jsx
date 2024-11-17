@@ -25,6 +25,8 @@ const AdminLogin = () => {
           if (res.data.success) {
             localStorage.setItem("AdminToken", res.data.token);
             localStorage.setItem("AdminEmail", values.email);
+            localStorage.setItem("Role", 'Admin');
+
             navigate("/admin/dashbord");
           } else {
             setGeneralError(res.data.message); 

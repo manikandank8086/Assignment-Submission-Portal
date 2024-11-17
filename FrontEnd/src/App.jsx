@@ -13,6 +13,7 @@ import PrivateRoute from "./middleware/PrivateRoute";
 import ProtectedRoute from "./middleware/ProtectRoute";
 import AdminProtectedRoute from "./middleware/AdminProtectRoute";
 import AdminPrivateRoute from "./middleware/AdminPrivateRoute";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -74,6 +75,9 @@ function App() {
               </AdminProtectedRoute>
             }
           />
+
+          {/* Catch-all route for undefined paths */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </Router>

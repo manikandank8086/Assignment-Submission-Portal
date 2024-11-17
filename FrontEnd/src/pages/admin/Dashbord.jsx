@@ -93,6 +93,7 @@ const AdminDashbord = () => {
   const handleLogout = () => {
     localStorage.removeItem("AdminEmail");
     localStorage.removeItem("AdminToken");
+    localStorage.removeItem('Role')
     navigate('/admin/login')
   };
 

@@ -27,6 +27,8 @@ const AdminRegister = () => {
           if (res.data.success) {
             localStorage.setItem("AdminToken", res.data.token);
             localStorage.setItem("AdminEmail", values.email);
+            localStorage.setItem("Role", 'Admin');
+
             navigate("/admin/dashbord");
           } else {
             setErrors({ email: res.data.message || "Registration failed" });
@@ -117,6 +119,28 @@ const AdminRegister = () => {
             )}
           </div>
 
+
+          <div>
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Phone"
+              value={formik.values.phone}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${
+                formik.touched.phone && formik.errors.phone
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-blue-500"
+              }`}
+            />
+            {formik.touched.phone && formik.errors.phone && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.phone}
+              </div>
+            )}
+          </div>
+
           <div>
             <input
               type="password"
@@ -160,26 +184,7 @@ const AdminRegister = () => {
               )}
           </div>
 
-          <div>
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Phone"
-              value={formik.values.phone}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${
-                formik.touched.phone && formik.errors.phone
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-blue-500"
-              }`}
-            />
-            {formik.touched.phone && formik.errors.phone && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.phone}
-              </div>
-            )}
-          </div>
+         
 
           <button
             type="submit"

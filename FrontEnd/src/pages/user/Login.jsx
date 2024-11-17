@@ -63,6 +63,8 @@ const UserLogin = () => {
           // On successful registration or login, navigate to the home page
           localStorage.setItem("UserToken", res.data.token); // Store the token in localStorage
           localStorage.setItem("UserEmail", email); // Store email in localStorage
+          localStorage.setItem("Role", 'User');
+
           navigate("/home"); // Navigate to home page
         } else {
           setGeneralError(res.data.message); // Set general error message from the response

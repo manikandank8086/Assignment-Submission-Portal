@@ -26,6 +26,8 @@ const UserRegister = () => {
         if (res.data.success) {
           localStorage.setItem("UserToken", res.data.token); 
           localStorage.setItem("UserEmail", email);
+          localStorage.setItem("Role", 'User');
+
           navigate('/home'); 
         } else {
           console.error('Registration failed:', res.data.message);

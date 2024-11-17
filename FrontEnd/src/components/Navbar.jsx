@@ -9,6 +9,8 @@ const Navbar = () => {
     // Clear local storage on logout
     localStorage.removeItem('UserToken');
     localStorage.removeItem('UserEmail');
+    localStorage.removeItem('Role')
+
     navigate('/login'); 
   };
 
