@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+  padding: 0;
+  margin: 0;
+  left: 0;
+  width: 100%;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif; /* Ensure the font is properly applied */
+  background-color: black; /* Background color of the body */
+  overflow-x: hidden; /* Prevent horizontal overflow */
+}
