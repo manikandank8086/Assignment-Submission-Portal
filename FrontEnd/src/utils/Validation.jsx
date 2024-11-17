@@ -81,9 +81,15 @@ export const Loginvalidation = Yup.object({
   task: Yup.string()
     .required('Task is required')
     .matches(/^[A-Za-z\s]*$/, "Task cannot contain numbers")
-    .min(5, 'Task must be at least 5 characters'),
+    .min(5, 'Task must be at least 5 characters')
+    .max(50, 'Task cannot be more than 100 characters'),  
+
   admin: Yup.string()
     .required('Admin is required')
     .matches(/^[A-Za-z\s]*$/, "admin name cannot contain numbers")
-    .min(3, 'Admin name must be at least 3 characters'),
+    .min(3, 'Admin name must be at least 3 characters')
+    .max(20, 'Admin name cannot be more than 50 characters'), 
+
 });
+   
+
