@@ -1,40 +1,37 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Navbar = () => {
-  const navigate = useNavigate(); // Hook for navigation
-  const userName = localStorage.getItem('email'); // Retrieve username (or email) from localStorage
+  const navigate = useNavigate()
+  const userName = localStorage.getItem('email')
 
   const handleLogout = () => {
-    // Clear local storage on logout
-    localStorage.removeItem('UserToken');
-    localStorage.removeItem('UserEmail');
+    localStorage.removeItem('UserToken')
+    localStorage.removeItem('UserEmail')
     localStorage.removeItem('Role')
-
-    navigate('/login'); 
-  };
+    navigate('/login')
+  }
 
   return (
-    <nav className="bg-gray-900 text-white py-4">
+    <nav className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-white py-4 shadow-lg">
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold text-red-500">
+        <Link to="/" className="text-2xl font-bold text-white hover:text-pink-200 transition-colors duration-300">
           GADGET IT MAGAZINE
         </Link>
         
         <div className="flex items-center space-x-6">
-          {/* Display the username */}
           {userName && (
-            <span className="text-lg text-slate-200">{userName}</span>
+            <span className="text-lg text-white bg-white bg-opacity-20 px-3 py-1 rounded-full">
+              {userName}
+            </span>
           )}
 
-          {/* Navigation Links */}
           <div className="space-x-4">
-            <Link to="/home" className="text-sm hover:text-green-500">Home</Link>
-            <Link to="/profile" className="text-sm hover:text-green-500">Profile</Link>
-            {/* Logout button */}
+           
+            
             <button
               onClick={handleLogout}
-              className="text-sm hover:text-green-500"
+              className="text-sm bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-md transition-colors duration-300"
             >
               Logout
             </button>
@@ -42,7 +39,7 @@ const Navbar = () => {
         </div>
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

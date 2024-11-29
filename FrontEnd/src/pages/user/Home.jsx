@@ -1,158 +1,164 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { SubmissionPorvatalidation } from "../../utils/Validation";
-import Navbar from "../../components/Navbar";
+'use client'
+
+import React, { useState } from "react"
+import axios from "axios"
+import { useFormik } from "formik"
+import * as Yup from "yup"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import Navbar from "../../components/Navbar"
 
 const UserHome = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
-  // useFormik hook for form handling
+  const validationSchema = Yup.object({
+    admin: Yup.string()
+      .required("Admin is required")
+      .matches(/^[A-Za-z\s]*$/, "Admin name cannot contain numbers")
+      .min(3, "Admin name must be at least 3 characters")
+      .max(50, "Admin name cannot be more than 50 characters"),
+    file: Yup.mixed().required("File is required"),
+  })
+
   const formik = useFormik({
     initialValues: {
-      task: "",
       admin: "",
+      file: null,
     },
-    validationSchema: SubmissionPorvatalidation,
+    validationSchema: validationSchema,
     onSubmit: async (values, { resetForm }) => {
-      setLoading(true);
+      setLoading(true)
 
       try {
-        // Get the email and token from localStorage
-        const email = localStorage.getItem("UserEmail");
-        const token = localStorage.getItem("UserToken");
-        
+        const email = localStorage.getItem("UserEmail")
+        const token = localStorage.getItem("UserToken")
 
-        // Check if email or token is missing
         if (!email || !token) {
-          toast.error("User not authenticated. Please log in again.");
-          return;
+          toast.error("User not authenticated. Please log in again.")
+          return
         }
 
-        // Send the request to submit the assignment
-        const response = await axios.post(
-          "http://localhost:3000/assignments",
-          {
-            task: values.task,
-            admin: values.admin,
-            email: email,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const formData = new FormData()
+        formData.append("admin", values.admin)
+        formData.append("email", email)
+        formData.append("file", values.file)
 
-        // Check if the response is successful
+        const response = await axios.post("http://localhost:3000/assignments", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        })
+
         if (response.data.success) {
-          toast.success("Assignment submitted successfully");
-          resetForm();
+          toast.success("Assignment submitted successfully")
+          resetForm()
         } else {
-          // Handle unsuccessful response from server
-          toast.error(response.data.message || "Failed to submit assignment");
+          toast.error(response.data.message || "Failed to submit assignment")
         }
       } catch (error) {
-        // Detailed error handling based on error response
         if (error.response) {
-          // If the error response exists, check the status
           if (error.response.status === 401) {
-            toast.error(  error.response.data.message||"Unauthorized: Please log in");
+            toast.error(error.response.data.message || "Unauthorized: Please log in")
           } else if (error.response.status === 404) {
-            toast.error(error.response.data.message || "Student not found");
+            toast.error(error.response.data.message || "Student not found")
           } else if (error.response.status === 500) {
-            toast.error(error.response.data.message ||"Internal server error. Please try again later");
+            toast.error(error.response.data.message || "Internal server error. Please try again later")
           } else {
-            toast.error(error.response.data.message || "Something went wrong");
+            toast.error(error.response.data.message || "Something went wrong")
           }
         } else if (error.request) {
-          // If no response from the server
-          toast.error(error.response.data.message || "No response from server. Please check your network");
+          toast.error("No response from server. Please check your network")
         } else {
-          // Other errors (e.g., issues with axios setup)
-          toast.error(error.response.data.message || "Error submitting assignment");
+          toast.error("Error submitting assignment")
         }
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     },
-  });
+  })
+
+  const handleFileChange = (event) => {
+    const file = event.currentTarget.files[0]
+    formik.setFieldValue("file", file)
+  }
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 animate-gradient-x">
       <Navbar />
-
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
+      <div className="flex flex-col items-center justify-center min-h-screen p-6">
         <ToastContainer position="top-center" autoClose={3000} />
-        <h1 className="text-3xl font-bold mb-8">User Assignment Portal</h1>
-        <form
-          className="bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md"
-          onSubmit={formik.handleSubmit}
-        >
-          <div className="mb-4">
-            <label htmlFor="task" className="block text-sm font-medium mb-1">
-              Task
-            </label>
-            <input
-              type="text"
-              id="task"
-              name="task"
-              value={formik.values.task}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className={`w-full bg-gray-700 border ${
-                formik.touched.task && formik.errors.task
-                  ? "border-red-500"
-                  : "border-gray-600"
-              } rounded-md p-2 text-white focus:outline-none focus:border-blue-500`}
-              placeholder="Enter task details"
-            />
-            {formik.touched.task && formik.errors.task ? (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.task}
+        <div className="w-full max-w-md bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg shadow-xl overflow-hidden">
+          <div className="p-6">
+            <h1 className="text-3xl font-bold mb-6 text-white text-center">Assignment Submission</h1>
+            <form onSubmit={formik.handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="file" className="block text-sm font-medium text-white mb-1">
+                  Upload Assignment (PDF)
+                </label>
+                <input
+                  type="file"
+                  id="file"
+                  name="file"
+                  accept=".pdf"
+                  onChange={handleFileChange}
+                  onBlur={formik.handleBlur}
+                  className="w-full bg-white bg-opacity-20 border border-transparent rounded-md p-2 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
+                />
+                {formik.touched.file && formik.errors.file && (
+                  <div className="text-red-300 text-sm mt-1">{formik.errors.file}</div>
+                )}
               </div>
-            ) : null}
-          </div>
 
-          <div className="mb-4">
-            <label htmlFor="admin" className="block text-sm font-medium mb-1">
-              Assign to Admin
-            </label>
-            <input
-              type="text"
-              id="admin"
-              name="admin"
-              value={formik.values.admin}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className={`w-full bg-gray-700 border ${
-                formik.touched.admin && formik.errors.admin
-                  ? "border-red-500"
-                  : "border-gray-600"
-              } rounded-md p-2 text-white focus:outline-none focus:border-blue-500`}
-              placeholder="Enter admin name"
-            />
-            {formik.touched.admin && formik.errors.admin ? (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.admin}
+              <div>
+                <label htmlFor="admin" className="block text-sm font-medium text-white mb-1">
+                  Assign to Admin
+                </label>
+                <input
+                  type="text"
+                  id="admin"
+                  name="admin"
+                  value={formik.values.admin}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="w-full bg-white bg-opacity-20 border border-transparent rounded-md p-2 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
+                  placeholder="Enter admin name"
+                />
+                {formik.touched.admin && formik.errors.admin && (
+                  <div className="text-red-300 text-sm mt-1">{formik.errors.admin}</div>
+                )}
               </div>
-            ) : null}
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded-md transition-colors duration-300 mt-4"
-          >
-            {loading ? "Submitting..." : "Submit Assignment"}
-          </button>
-        </form>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-bold py-2 px-4 rounded-md transition-colors duration-300"
+              >
+                {loading ? "Submitting..." : "Submit Assignment"}
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
-    </>
-  );
-};
+      <style jsx global>{`
+        @keyframes gradient-x {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+        .animate-gradient-x {
+          background-size: 400% 400%;
+          animation: gradient-x 15s ease infinite;
+        }
+      `}</style>
+    </div>
+  )
+}
 
-export default UserHome;
+export default UserHome

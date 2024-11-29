@@ -13,7 +13,7 @@ const AdminDashbord = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const navigate= useNavigate()
+  const navigate = useNavigate();
 
   // Fetch assignments when component mounts
   useEffect(() => {
@@ -89,12 +89,11 @@ const AdminDashbord = () => {
     }
   };
 
-
   const handleLogout = () => {
     localStorage.removeItem("AdminEmail");
     localStorage.removeItem("AdminToken");
-    localStorage.removeItem('Role')
-    navigate('/admin/login')
+    localStorage.removeItem("Role");
+    navigate("/admin/login");
   };
 
   // Toggle the user profile dropdown
@@ -105,7 +104,9 @@ const AdminDashbord = () => {
   // Filter assignments based on search term
   const filteredAssignments = assignments.filter((assignment) => {
     const searchLower = searchTerm.toLowerCase().trim();
-    const userIdLower = assignment.userId ? assignment.userId.toLowerCase() : "";
+    const userIdLower = assignment.userId
+      ? assignment.userId.toLowerCase()
+      : "";
     const taskLower = assignment.task ? assignment.task.toLowerCase() : "";
 
     // Match search term with userId or task
@@ -169,32 +170,84 @@ const AdminDashbord = () => {
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
         {/* Assignments Table */}
-        <div className="bg-gray-800  rounded-lg overflow-hidden">
-          <table className="w-full  text-sm">
+        <div className="bg-gray-800 rounded-lg overflow-hidden">
+          <table className="w-full text-sm border-collapse table-auto">
             <thead>
-              <tr className="border-b border-gray-700">
-                <th className="px-6 py-3 text-left">User</th>
-                <th className="px-6 py-3 text-left">Admin</th>
-                <th className="px-6 py-3 text-left">Task</th>
-                <th className="px-6 py-3 text-left">Status</th>
-                <th className="px-6 py-3 text-left">Submission Date</th>
-                <th className="px-6 py-3 text-center">Actions</th>
+              <tr className="border-b border-gray-700 bg-gray-700">
+                <th className="px-6 py-3 text-left font-medium text-white">
+                  User
+                </th>
+                <th className="px-6 py-3 text-left font-medium text-white">
+                  Admin
+                </th>
+                <th className="px-6 py-3 text-center font-medium text-white">
+                  Task
+                </th>{" "}
+                {/* Centered header */}
+                <th className="px-6 py-3 text-left font-medium text-white">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left font-medium text-white">
+                  Submission Date
+                </th>
+                <th className="px-6 py-3 text-center font-medium text-white">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
               {filteredAssignments.length > 0 ? (
                 filteredAssignments.map((assignment) => (
-                  <tr key={assignment._id} className="border-b border-gray-700">
-                    <td className="px-6 py-4">{assignment.userId}</td>
-                    <td className="px-6 py-4">{assignment.admin}</td>
-                    <td className="px-6 py-4">{assignment.task}</td>
+                  <tr
+                    key={assignment._id}
+                    className="border-b border-gray-700 hover:bg-gray-600"
+                  >
+                    <td className="px-6 py-4 text-white">
+                      {assignment.userId}
+                    </td>
+                    <td className="px-6 py-4 text-white">{assignment.admin}</td>
+                    <td className="px-6 py-4 text-center text-white">
+                      {" "}
+                      {/* Centered content */}
+                      {assignment.task.endsWith(".pdf") ? (
+                        <div className="flex flex-col items-center">
+                          {" "}
+                          {/* Centering the PDF content */}
+                          <iframe
+                            src={`http://localhost:3000/${assignment.task.replace(
+                              /\\/g,
+                              "/"
+                            )}`}
+                            width="350"
+                            height="250"
+                            className="border rounded mb-3"
+                            title={assignment.task}
+                          />
+                          <a
+                            href={`http://localhost:3000/${assignment.task.replace(
+                              /\\/g,
+                              "/"
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-400 hover:underline"
+                          >
+                            View Full PDF
+                          </a>
+                        </div>
+                      ) : (
+                        <span className="block text-gray-200 break-words max-w-xs">
+                          {assignment.task}
+                        </span>
+                      )}
+                    </td>
                     <td
                       className={`px-6 py-4 ${
                         assignment.status === "pending"
-                          ? "text-yellow-500"
+                          ? "text-yellow-400"
                           : assignment.status === "accepted"
-                          ? "text-green-500"
-                          : "text-red-500"
+                          ? "text-green-400"
+                          : "text-red-400"
                       }`}
                     >
                       {assignment.status === "accepted"
@@ -203,8 +256,7 @@ const AdminDashbord = () => {
                         ? "Rejected"
                         : "Pending"}
                     </td>
-                    <td className="px-6 py-4">
-                      {/* Format the date */}
+                    <td className="px-6 py-4 text-white">
                       {assignment.createdAt
                         ? format(new Date(assignment.createdAt), "MM/dd/yyyy")
                         : "N/A"}
@@ -217,7 +269,7 @@ const AdminDashbord = () => {
                               onClick={() =>
                                 handleAssignmentAction(true, assignment._id)
                               }
-                              className="p-1 bg-green-500 text-white rounded hover:bg-green-600"
+                              className="p-2 bg-green-500 text-white rounded hover:bg-green-600"
                               title="Accept"
                             >
                               <Check className="w-4 h-4" />
@@ -226,7 +278,7 @@ const AdminDashbord = () => {
                               onClick={() =>
                                 handleAssignmentAction(false, assignment._id)
                               }
-                              className="p-1 bg-red-500 text-white rounded hover:bg-red-600"
+                              className="p-2 bg-red-500 text-white rounded hover:bg-red-600"
                               title="Reject"
                             >
                               <X className="w-4 h-4" />
@@ -236,11 +288,15 @@ const AdminDashbord = () => {
                           <span
                             className={
                               assignment.status === "accepted"
-                                ? "text-green-500"
-                                : "text-red-500"
+                                ? "text-green-400"
+                                : "text-red-400"
                             }
                           >
-                            {assignment.status}
+                            {assignment.status === "accepted"
+                              ? "Approved"
+                              : assignment.status === "rejected"
+                              ? "Rejected"
+                              : "Pending"}
                           </span>
                         )}
                       </div>
@@ -249,7 +305,7 @@ const AdminDashbord = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="text-center py-4">
+                  <td colSpan="6" className="text-center py-4 text-gray-300">
                     No Assignment Data
                   </td>
                 </tr>

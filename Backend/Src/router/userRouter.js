@@ -1,4 +1,5 @@
 import express from 'express'
+import upload from '../../Utils/multer.js';
 import * as userAuthController from '../controller/User/userAuthController.js';
 import * as userHomeController from '../controller/User/userHomeController.js'
 
@@ -13,7 +14,7 @@ router.post('/login',userAuthController.login)
 
 router.post('/google-login',userAuthController.googleLogin)
 
-router.post('/assignments',userHomeController.submitAssignment)
+router.post('/assignments',upload.single('file'),userHomeController.submitAssignment)
 
 
 

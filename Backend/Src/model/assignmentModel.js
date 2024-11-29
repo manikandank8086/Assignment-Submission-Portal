@@ -12,7 +12,6 @@ const assignmentSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
   });
   
-  // Add a compound index to make userId and task unique together
   assignmentSchema.index({ userId: 1, task: 1 }, { unique: true });
   
   const AssignmentModel = mongoose.model("Assignment", assignmentSchema);
